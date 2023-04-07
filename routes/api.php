@@ -19,4 +19,12 @@ use App\Http\Controllers\PostController;
 //     return $request->user();
 // });
 
+
+//view posts
 Route::get('posts',[PostController::class,'index']);
+
+//show post with id
+Route::get('posts/{id}',[PostController::class,'show']);
+
+//create post
+Route::post('posts',[PostController::class,'store']);

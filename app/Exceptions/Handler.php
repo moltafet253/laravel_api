@@ -2,11 +2,16 @@
 
 namespace App\Exceptions;
 
-use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Throwable;
+use App\Traits\ApiResponser;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class Handler extends ExceptionHandler
 {
+    use ApiResponser;
+
     /**
      * A list of exception types with their corresponding custom log levels.
      *
@@ -44,5 +49,23 @@ class Handler extends ExceptionHandler
         $this->reportable(function (Throwable $e) {
             //
         });
+    }
+
+
+    //handle error pages
+    public function render($request, Throwable $e)
+    {
+        if ($e instanceof ModelNotFoundException) {
+            return $this->errorResponse($e->getMessage(), 404);
+        }
+
+        if ($e instanceof NotFoundHttpException) {
+            return $this->errorResponse($e->getMessage(), 404);
+        }
+
+        if(config('app.debug')){
+            return parent::render($request, $e);
+        }
+        return $this->errorResponse($e->getMessage(), 500);
     }
 }
