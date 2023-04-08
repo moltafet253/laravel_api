@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\PostCollection;
+use App\Http\Resources\PostResource;
 use App\Models\Post;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -11,6 +13,7 @@ class PostController extends ApiController
 {
     public function index()
     {
+        $posts = Post::all();
         //return customize
         // return [
         //     'name' => 'WEBLINE',
@@ -20,16 +23,44 @@ class PostController extends ApiController
         // return response()->json('webline');
 
         //return all posts
-        // return response()->json(Post::all());
+        // return response()->json($posts);
 
         //API controller
         //all functions to send response extends from ApiController
 
         //send all data to client to 200 status
-        return $this->successResponse(Post::all(), 200);
+//        return $this->successResponse($posts, 200);
 
         //send error to client to 500 status
         // return $this->errorResponse('error', 500);
+
+        //with apiResource - method 1
+        return PostResource::collection($posts);
+
+        //with apiResource - method 2
+        //make collection of table -> php artisan make:resource User --collection =>User is our table - that file class extends from Resource Collection
+//        return new PostCollection($posts);
+
+    }
+
+    //show post with id
+    public function show($id)
+    {
+        $post = Post::findOrFail($id);
+        //without apiResource
+//        return $this->successResponse($post, 200);
+
+        //with apiResource -> if want to make privileges to user and create permission you must use apiResource
+        //to make apiResource enter this -> php artisan make:resource PostResource => PostResource is name of resource
+//        return new PostResource($post);
+
+        //bind array method 2 -> if want to bind an array to main export data - if you want to bind a variable
+        return (new PostResource($post))->additional([
+            'foo'=>[
+                'key'=>$post->id
+            ]
+        ]);
+
     }
 
     //create post with api
@@ -65,13 +96,6 @@ class PostController extends ApiController
         ]);
 
         return $this->successResponse(Post::all(), 201);
-    }
-
-    //show post with id
-    public function show($id)
-    {
-        $post = Post::findOrFail($id);
-        return $this->successResponse($post, 200);
     }
 
     //if you want to handle errors go to app/exceptions/handler.php -> function render

@@ -2,6 +2,8 @@
 
 namespace App\Exceptions;
 
+use Error;
+use Exception;
 use Throwable;
 use App\Traits\ApiResponser;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -66,6 +68,14 @@ class Handler extends ExceptionHandler
         }
 
         if ($e instanceof MethodNotAllowedHttpException) {
+            return $this->errorResponse($e->getMessage(), 500);
+        }
+
+        if ($e instanceof Exception) {
+            return $this->errorResponse($e->getMessage(), 500);
+        }
+
+        if ($e instanceof Error) {
             return $this->errorResponse($e->getMessage(), 500);
         }
 
