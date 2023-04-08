@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PostController;
+use App\Http\Controllers\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,10 +22,19 @@ use App\Http\Controllers\PostController;
 
 
 //view posts
-Route::get('posts',[PostController::class,'index']);
+Route::get('posts', [PostController::class, 'index']);
 
 //show post with id
-Route::get('posts/{id}',[PostController::class,'show']);
+Route::get('posts/{id}', [PostController::class, 'show']);
 
 //create post
-Route::post('posts',[PostController::class,'store']);
+Route::post('posts', [PostController::class, 'store']);
+
+//update post
+Route::put('posts/{id}', [PostController::class, 'update']);
+
+//delete post
+Route::delete('posts/{id}', [PostController::class, 'delete']);
+
+//Create API Controller -> php artisan make:controller UserController --api => UserController is name of controller
+Route::apiResource('users', UserController::class);

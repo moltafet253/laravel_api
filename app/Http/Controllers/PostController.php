@@ -32,7 +32,6 @@ class PostController extends ApiController
         // return $this->errorResponse('error', 500);
     }
 
-
     //create post with api
     public function store(Request $request)
     {
@@ -51,7 +50,7 @@ class PostController extends ApiController
 
         //save image
         // dd($request->image);
-        $imageName = Carbon::now()->microsecond.'.'.$request->image->extension();
+        $imageName = Carbon::now()->microsecond . '.' . $request->image->extension();
         $request->image->storeAs('images/posts', $imageName, 'public');
         // dd($imageName);
 
@@ -68,15 +67,51 @@ class PostController extends ApiController
         return $this->successResponse(Post::all(), 201);
     }
 
-    
-
     //show post with id
     public function show($id)
     {
         $post = Post::findOrFail($id);
-
         return $this->successResponse($post, 200);
     }
 
     //if you want to handle errors go to app/exceptions/handler.php -> function render
+
+    //update post with api
+    public function update(Request $request, Post $post)
+    {
+        // validate request
+        $validator = Validator::make($request->all(), [
+            'title' => 'required|string',
+            'body' => 'required|string',
+            'image' => 'image',
+            'user_id' => 'required',
+        ]);
+        if ($validator->fails()) {
+            return $this->errorResponse($validator->messages(), 422);
+        }
+
+        //check if image is not null save that
+        if ($request->has('image')) {
+            $imageName = Carbon::now()->microsecond . '.' . $request->image->extension();
+            $request->image->storeAs('images/posts', $imageName, 'public');
+        }
+
+        //create request
+        $post->update([
+            'title' => $request->title,
+            'body' => $request->body,
+            'image' => $request->has('image') ? $imageName : $post->image,
+            'user_id' => $request->user_id,
+        ]);
+
+        return $this->successResponse(Post::all(), 200);
+    }
+
+    //delete post
+    public function delete($id)
+    {
+        $post = Post::findOrFail($id);
+        $post->delete();
+        return $this->successResponse($post, 200);
+    }
 }
