@@ -4,6 +4,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\Api\V1\PostController as V1PostController;
+use App\Http\Controllers\Api\V2\PostController as V2PostController;
 
 /*
 |--------------------------------------------------------------------------
@@ -38,3 +40,14 @@ Route::delete('posts/{id}', [PostController::class, 'delete']);
 
 //Create API Controller -> php artisan make:controller UserController --api => UserController is name of controller
 Route::apiResource('users', UserController::class);
+
+//Version management -> you can
+//first create your controller like this -> php artisan make:controller Api\V1\PostController --api
+//then create resources split -> php artisan make:resource V1\PostResource
+Route::prefix('v1')->group(function (){
+    Route::get('/posts',[V1PostController::class,'index']);
+});
+
+Route::prefix('v2')->group(function (){
+    Route::get('/posts',[V2PostController::class,'index']);
+});
