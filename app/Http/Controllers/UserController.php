@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\UserResource;
 use Carbon\Carbon;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -15,7 +16,15 @@ class UserController extends ApiController
      */
     public function index()
     {
-        return $this->successResponse(User::all(), 200);
+//        return $this->successResponse(User::all(), 200);
+
+        //send all one user posts
+        //if you want to hidden any column -> go to Models/User and write it in protected $hidden
+        //for first create a resource and return everything you want to show -> UserResource
+        //then write this below
+        $users=User::all();
+        return UserResource::collection($users->load('posts'));
+        //then go to your model -> User and create your releation -> UserResource
     }
 
     /**

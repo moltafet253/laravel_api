@@ -13,8 +13,21 @@ class PostController extends ApiController
 {
     public function index()
     {
-        $posts = Post::all();
-        //return customize
+        //get all posts
+//        $posts = Post::all();
+        //get all posts with pagination
+        $posts = Post::paginate(2);
+        //if you want to return default
+//        return PostResource::collection($posts);
+        //if you want to return as you wish
+        return $this->successResponse([
+            'posts'=>PostResource::collection($posts),
+            'links'=>PostResource::collection($posts)->response()->getData()->links,
+            'meta'=>PostResource::collection($posts)->response()->getData()->meta,
+        ],200);
+        return PostResource::collection($posts);
+
+        //return customize values
         // return [
         //     'name' => 'WEBLINE',
         // ];
@@ -35,7 +48,7 @@ class PostController extends ApiController
         // return $this->errorResponse('error', 500);
 
         //with apiResource - method 1
-        return PostResource::collection($posts);
+//        return PostResource::collection($posts);
 
         //with apiResource - method 2
         //make collection of table -> php artisan make:resource User --collection =>User is our table - that file class extends from Resource Collection
